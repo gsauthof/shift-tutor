@@ -1,0 +1,87 @@
+[Unit]
+Description=Filter suboptimal shift combinations
+Documentation=https://github.com/gsauthof/shift-tutor
+
+
+[Service]
+User=root
+Group=root
+Type=notify
+EnvironmentFile=-/etc/sysconfig/shift-tutor
+ExecStart=/usr/local/bin/shift-tutor --systemd $opts
+
+# Restart the service if it exited cleanly/dirty/because of a signal/timeout
+Restart=always
+
+# Sleep X seconds between a Restart= triggered restart
+RestartSec=59
+
+
+# NB: On a SELinux enabled system we are running this service
+#     unconfined since no domain transition is defined
+#     for the executable's default label.
+#     However, below systemd settings sandbox the process.
+
+# no new privileges via exec setuid etc.
+NoNewPrivileges=true
+
+# We need access to the input device ...
+#PrivateDevices=true
+DeviceAllow=char-input rw
+DeviceAllow=/dev/uinput rw
+
+PrivateTmp=true
+# Mount all system directories read-only except for /dev|/proc|/sys|/tmp
+# NOTE: Not available on CentOS 7 - but on e.g. Fedora 29
+ProtectSystem=strict
+# Make /home|/root|/run/user inaccessible/empty
+ProtectHome=true
+
+ProtectClock=true
+ProtectHostname=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+# disallow reading/writing kernel ring buffer
+ProtectKernelLogs=true
+# disallow modifying control groups
+ProtectControlGroups=true
+
+ProtectProc=invisible
+# many services need to read _some_thing from /proc/ but this one doesn't
+ProcSubset=pid
+
+SystemCallArchitectures=native
+
+SystemCallFilter=@default @basic-io @file-system @io-event @network-io sysinfo ioctl rt_sigaction
+SystemCallFilter=~@process
+# python calls prctl
+SystemCallFilter=prctl
+SystemCallFilter=~@ipc
+
+# 'Service runs as root, option does not apply', though
+RemoveIPC=true
+# assign the empty set
+CapabilityBoundingSet=
+
+# overkill, since AF_INET* are blacklisted
+IPAddressDeny=any
+# AF_UNIX is required for systemd startup notification ...
+RestrictAddressFamilies=AF_UNIX
+
+RestrictNamespaces=true
+# kind of implied by User=/NoNewPrivileges= setting
+RestrictRealtime=true
+RestrictSUIDSGID=true
+
+PrivateNetwork=true
+
+MemoryDenyWriteExecute=true
+LockPersonality=true
+PrivateUsers=true
+
+UMask=0077
+
+
+[Install]
+WantedBy=multi-user.target
+
