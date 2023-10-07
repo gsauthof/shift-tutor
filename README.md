@@ -7,6 +7,8 @@ shift keys when touch typing.
 It might also serve as a concise example of how keyboard events
 can be easily read, filtered, manipulated and injected on Linux.
 
+See also my [blog article on shift-tutor](https://gms.tf/shift-typing.html).
+
 2023, Georg Sauthoff
 
 
