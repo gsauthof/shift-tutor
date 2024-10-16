@@ -57,6 +57,7 @@ SystemCallFilter=~@process
 # python calls prctl
 SystemCallFilter=prctl
 SystemCallFilter=~@ipc
+SystemCallFilter=uname
 
 # 'Service runs as root, option does not apply', though
 RemoveIPC=true
