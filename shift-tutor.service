@@ -52,12 +52,13 @@ ProcSubset=pid
 
 SystemCallArchitectures=native
 
-SystemCallFilter=@default @basic-io @file-system @io-event @network-io sysinfo ioctl rt_sigaction
+SystemCallFilter=@default @basic-io @file-system @io-event @network-io sysinfo ioctl @signal
 SystemCallFilter=~@process
 # python calls prctl
 SystemCallFilter=prctl
 SystemCallFilter=~@ipc
 SystemCallFilter=uname
+SystemCallFilter=getrandom
 
 # 'Service runs as root, option does not apply', though
 RemoveIPC=true
